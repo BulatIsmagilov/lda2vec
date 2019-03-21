@@ -30,7 +30,7 @@ stop_words = stopwords.words('english')
 
 def read_files():
     texts = []
-    for name in files:
+    for name in files[0:100]:
         try:
             with open(name) as f:
                 texts.append(prepare_text_for_lda(f.read()))
