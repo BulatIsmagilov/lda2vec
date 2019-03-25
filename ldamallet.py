@@ -12,7 +12,6 @@ import pandas as pd
 warnings.filterwarnings('ignore')  # Let's not pay heed to them right now
 
 from gensim.models import CoherenceModel, HdpModel
-
 # spacy for lemmatization
 import spacy
 
@@ -30,16 +29,16 @@ print(corpus[:1])
 # Human readable format of corpus (term-frequency)
 [[(id2word[id], freq) for id, freq in cp] for cp in corpus[:1]]
 
-hdpmodel = HdpModel(corpus=corpus, id2word=id2word)
 
-hdpmodel.show_topics()
+mallet_path = '/Users/ismglv/dev/lda2vec/mallet-2.0.8/bin/mallet' # update this path
+ldamallet = gensim.models.wrappers.LdaMallet(mallet_path, corpus=corpus, num_topics=100, id2word=id2word)
 
-coherence_model_hdp = CoherenceModel(model=hdpmodel, texts=texts, dictionary=id2word, coherence='c_v')
+coherence_model_hdp = CoherenceModel(model=ldamallet, texts=texts, dictionary=id2word, coherence='c_v')
 
 coherence_hdp = coherence_model_hdp.get_coherence()
 print('\nCoherence Score: ', coherence_hdp)
 
-df_topic_sents_keywords = model_visualization.format_topics_sentences(hdpmodel, corpus, texts)
+df_topic_sents_keywords = model_visualization.format_topics_sentences(ldamallet, corpus, texts)
 
 df_dominant_topic = df_topic_sents_keywords.reset_index()
 df_dominant_topic.columns = ['Document_No', 'Dominant_Topic', 'Topic_Perc_Contrib', 'Keywords', 'Text']
