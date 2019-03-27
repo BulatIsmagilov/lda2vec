@@ -2,6 +2,7 @@ import re
 import numpy as np
 import pandas as pd
 from pprint import pprint
+from IPython import embed
 
 def format_topics_sentences(model, corpus, texts):
     # Init output
@@ -13,6 +14,7 @@ def format_topics_sentences(model, corpus, texts):
         # Get the Dominant topic, Perc Contribution and Keywords for each document
         for j, (topic_num, prop_topic) in enumerate(row):
             if j == 0:  # => dominant topic
+                embed()
                 wp = model.show_topic(topic_num)
                 topic_keywords = ", ".join([word for word, prop in wp])
                 sent_topics_df = sent_topics_df.append(pd.Series([int(topic_num), round(prop_topic,4), topic_keywords]), ignore_index=True)

@@ -13,7 +13,7 @@ import re
 
 import numpy as np
 import pandas as pd
-
+import meta_parsing
 
 import spacy
 spacy.load('en')
@@ -28,15 +28,19 @@ files = glob.glob(path)
 
 stop_words = stopwords.words('english')
 
+metadata = meta_parsing.metadata()
+
 def read_files():
     texts = []
     for name in files:
         try:
             with open(name) as f:
-                texts.append(prepare_text_for_lda(f.read()))
+                texts.append([name.split('/')[-1], prepare_text_for_lda(f.read())])
         except IOError as exc:
             if exc.errno != errno.EISDIR:
                 raise
+    texts = pd.DataFrame(texts, columns=["filename", "words"])
+    texts = pd.concat([texts, metadata])
     return texts
 
 
