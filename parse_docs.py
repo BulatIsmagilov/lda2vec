@@ -32,7 +32,7 @@ metadata = meta_parsing.metadata()
 
 def read_files():
     texts = []
-    for name in files:
+    for name in files[0:2000]:
         try:
             with open(name) as f:
                 texts.append([name.split('/')[-1], prepare_text_for_lda(f.read())])
@@ -40,9 +40,7 @@ def read_files():
             if exc.errno != errno.EISDIR:
                 raise
     texts = pd.DataFrame(texts, columns=["filename", "words"])
-    texts = pd.concat([texts, metadata])
-    return texts
-
+    return texts.merge(metadata, left_on='filename', right_on='filename')
 
 def remove_stopwords(text, stop_words):
     clear_text = []
