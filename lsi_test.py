@@ -1,5 +1,6 @@
 # Run in python console
-# import nltk;
+import nltk;
+
 import os
 import re
 import operator
@@ -8,22 +9,22 @@ import warnings
 import gensim
 import numpy as np
 import pandas as pd
-# warnings.filterwarnings('ignore')  # Let's not pay heed to them right now
+warnings.filterwarnings('ignore')  # Let's not pay heed to them right now
 
 from gensim.models import CoherenceModel, HdpModel
 # spacy for lemmatization
 import spacy
 
 from IPython import embed
-# import parse_docs
-# import generate_corpus
+import parse_docs
+import generate_corpus
 import model_visualization
+
 import pickle
 
 with open('text_corpus_id2word_fulldata.pkl', 'rb') as handle:
    texts, id2word, corpus, full_data = pickle.load(handle)
-#  texts, id2word, corpus, full_data = generate_corpus.generate_corpus()
-# embed()
+# texts, id2word, corpus = generate_corpus.generate_corpus()
 
 # View
 print(corpus[:1])
@@ -32,19 +33,17 @@ print(corpus[:1])
 [[(id2word[id], freq) for id, freq in cp] for cp in corpus[:1]]
 
 
-mallet_path = '/Users/ismglv/dev/lda2vec/mallet-2.0.8/bin/mallet' # update this path
-for i in [60, 70, 80, 90, 110, 120, 130, 140]:
-    ldamallet = gensim.models.wrappers.LdaMallet(mallet_path, corpus=corpus, num_topics=i, id2word=id2word)
+tfidf = gensim.models.TfidfModel(corpus)  # step 1 -- initialize a model
+tfidf_corpus = tfidf[corpus]
 
-    coherence_model_hdp = CoherenceModel(model=ldamallet, texts=texts, dictionary=id2word, coherence='c_v')
+for i in [50, 100, 150]:
+    lsi_model = gensim.models.LsiModel(tfidf_corpus, id2word=id2word, num_topics=i)
 
-    coherence_hdp = coherence_model_hdp.get_coherence()
-    print('\nCoherence Score: ', coherence_hdp, i)
-
-    coherence_model_cw2v = CoherenceModel(model=ldamallet, texts=texts, dictionary=id2word, coherence='c_w2v')
-    coherence_model_cnmpi = CoherenceModel(model=ldamallet, texts=texts, dictionary=id2word, coherence='c_npmi')
-    coherence_model_cuci = CoherenceModel(model=ldamallet, texts=texts, dictionary=id2word, coherence='c_uci')
-    coherence_model_u_mass = CoherenceModel(model=ldamallet, texts=texts, dictionary=id2word, coherence='u_mass')
+    # coherence_model = CoherenceModel(model=lsi_model, texts=texts, dictionary=id2word, coherence='c_v')
+    coherence_model_cw2v = CoherenceModel(model=lsi_model, texts=texts, dictionary=id2word, coherence='c_w2v')
+    coherence_model_cnmpi = CoherenceModel(model=lsi_model, texts=texts, dictionary=id2word, coherence='c_npmi')
+    coherence_model_cuci = CoherenceModel(model=lsi_model, texts=texts, dictionary=id2word, coherence='c_uci')
+    coherence_model_u_mass = CoherenceModel(model=lsi_model, texts=texts, dictionary=id2word, coherence='u_mass')
 
     # coherence = coherence_model.get_coherence()
     coherence_cw2v = coherence_model_cw2v.get_coherence()
@@ -57,9 +56,7 @@ for i in [60, 70, 80, 90, 110, 120, 130, 140]:
     print('\nCoherence C_UCI Score: ', coherence_cuci)
     print('\nCoherence U_MASS Score: ', coherence_umass)
 
-
-
-# df_topic_sents_keywords = model_visualization.format_topics_sentences(ldamallet, corpus, texts)
+# df_topic_sents_keywords = model_visualization.format_topics_sentences(lsi_model, corpus, texts)
 #
 # df_dominant_topic = df_topic_sents_keywords.reset_index()
 # df_dominant_topic.columns = ['Document_No', 'Dominant_Topic', 'Topic_Perc_Contrib', 'Keywords', 'Text']

@@ -21,11 +21,8 @@ import parse_docs
 import generate_corpus
 import model_visualization
 
-import pickle
 
-with open('text_corpus_id2word_fulldata.pkl', 'rb') as handle:
-   texts, id2word, corpus, full_data = pickle.load(handle)
-# texts, id2word, corpus = generate_corpus.generate_corpus()
+texts, id2word, corpus = generate_corpus.generate_corpus()
 
 # View
 print(corpus[:1])
@@ -33,31 +30,23 @@ print(corpus[:1])
 # Human readable format of corpus (term-frequency)
 [[(id2word[id], freq) for id, freq in cp] for cp in corpus[:1]]
 
-hdpmodel = HdpModel(corpus=corpus, id2word=id2word)
+for i in [50, 100, 150]:
+    model = gensim.models.ldamodel.LdaModel(corpus=corpus,
+                                               id2word=id2word,
+                                               num_topics=i,
+                                               random_state=100,
+                                               update_every=1,
+                                               chunksize=100,
+                                               passes=10,
+                                               alpha='auto',
+                                               per_word_topics=True)
 
-hdpmodel.show_topics()
+    model.show_topics()
 
-coherence_model_hdp = CoherenceModel(model=hdpmodel, texts=texts, dictionary=id2word, coherence='c_v')
+    coherence_model = CoherenceModel(model=model, texts=texts, dictionary=id2word, coherence='c_v')
 
-coherence_hdp = coherence_model_hdp.get_coherence()
-print('\nCoherence Score: ', coherence_hdp)
-
-coherence_model_cw2v = CoherenceModel(model=hdpmodel, texts=texts, dictionary=id2word, coherence='c_w2v')
-coherence_model_cnmpi = CoherenceModel(model=hdpmodel, texts=texts, dictionary=id2word, coherence='c_npmi')
-coherence_model_cuci = CoherenceModel(model=hdpmodel, texts=texts, dictionary=id2word, coherence='c_uci')
-coherence_model_u_mass = CoherenceModel(model=hdpmodel, texts=texts, dictionary=id2word, coherence='u_mass')
-
-# coherence = coherence_model.get_coherence()
-coherence_cw2v = coherence_model_cw2v.get_coherence()
-coherence_cnmpi = coherence_model_cnmpi.get_coherence()
-coherence_cuci = coherence_model_cuci.get_coherence()
-coherence_umass = coherence_model_u_mass.get_coherence()
-# print('\nCoherence Score: ', coherence)
-print('\nCoherence C_W2V Score: ', coherence_cw2v)
-print('\nCoherence C_NMPI Score: ', coherence_cnmpi)
-print('\nCoherence C_UCI Score: ', coherence_cuci)
-print('\nCoherence U_MASS Score: ', coherence_umass)
-
+    coherence = coherence_model.get_coherence()
+    print('\nCoherence Score: ', coherence)
 
 # df_topic_sents_keywords = model_visualization.format_topics_sentences(hdpmodel, corpus, texts)
 #
