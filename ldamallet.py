@@ -32,11 +32,11 @@ print(corpus[:1])
 [[(id2word[id], freq) for id, freq in cp] for cp in corpus[:1]]
 
 
-mallet_path = '/Users/ismglv/dev/lda2vec/mallet-2.0.8/bin/mallet' # update this path
+mallet_path = '/Users/ismglv/dev/lda2vec/mallet/bin/mallet' # update this path
 ldamallet = gensim.models.wrappers.LdaMallet(mallet_path, corpus=corpus, num_topics=60, id2word=id2word)
-coherence_model = CoherenceModel(model=ldamallet, texts=texts, dictionary=id2word, coherence='c_v')
-coherence = coherence_model.get_coherence()
-print('\nCoherence Score: ', coherence)
+# coherence_model = CoherenceModel(model=ldamallet, texts=texts, dictionary=id2word, coherence='c_v')
+# coherence = coherence_model.get_coherence()
+# print('\nCoherence Score: ', coherence)
 embed()
 
 

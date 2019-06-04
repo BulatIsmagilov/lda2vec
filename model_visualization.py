@@ -19,7 +19,7 @@ def format_topics_sentences(model, corpus, texts):
                 sent_topics_df = sent_topics_df.append(pd.Series([int(topic_num), round(prop_topic,4), topic_keywords]), ignore_index=True)
             else:
                 break
-    sent_topics_df.columns = ['Dominant_Topic', 'Perc_Contribution', 'Topic_Keywords']
+    sent_topics_df.columns = ['dom_topic', 'topic_weight', 'topic_words']
 
     # Add original text to the end of the output
     contents = pd.Series(texts)
