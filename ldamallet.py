@@ -33,33 +33,34 @@ print(corpus[:1])
 
 
 mallet_path = '/Users/ismglv/dev/lda2vec/mallet/bin/mallet' # update this path
-ldamallet = gensim.models.wrappers.LdaMallet(mallet_path, corpus=corpus, num_topics=60, id2word=id2word)
+# ldamallet = gensim.models.wrappers.LdaMallet(mallet_path, corpus=corpus, num_topics=60, id2word=id2word)
 # coherence_model = CoherenceModel(model=ldamallet, texts=texts, dictionary=id2word, coherence='c_v')
 # coherence = coherence_model.get_coherence()
 # print('\nCoherence Score: ', coherence)
-embed()
 
+vectors_path = "/Users/ismglv/dev/lda2vec/GoogleNews-vectors-negative300.bin"
+keyed_vectors = gensim.models.KeyedVectors.load_word2vec_format(vectors_path, binary=True)
 
-# for i in [50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150]:
-#     ldamallet = gensim.models.wrappers.LdaMallet(mallet_path, corpus=corpus, num_topics=i, id2word=id2word)
-#
+for i in [50, 100, 150]:
+    ldamallet = gensim.models.wrappers.LdaMallet(mallet_path, corpus=corpus, num_topics=i, id2word=id2word)
+
     # coherence_model_hdp = CoherenceModel(model=ldamallet, texts=texts, dictionary=id2word, coherence='c_v')
-    #
+
     # coherence_hdp = coherence_model_hdp.get_coherence()
     # print('\nCoherence Score: ', coherence_hdp, i)
-    #
-    # coherence_model_cw2v = CoherenceModel(model=ldamallet, texts=texts, dictionary=id2word, coherence='c_w2v')
+
+    coherence_model_cw2v = CoherenceModel(model=ldamallet, texts=texts, dictionary=id2word, coherence='c_w2v', keyed_vectors=keyed_vectors)
     # coherence_model_cnmpi = CoherenceModel(model=ldamallet, texts=texts, dictionary=id2word, coherence='c_npmi')
     # coherence_model_cuci = CoherenceModel(model=ldamallet, texts=texts, dictionary=id2word, coherence='c_uci')
     # coherence_model_u_mass = CoherenceModel(model=ldamallet, texts=texts, dictionary=id2word, coherence='u_mass')
-    #
+
     # # coherence = coherence_model.get_coherence()
-    # coherence_cw2v = coherence_model_cw2v.get_coherence()
+    coherence_cw2v = coherence_model_cw2v.get_coherence()
     # coherence_cnmpi = coherence_model_cnmpi.get_coherence()
     # coherence_cuci = coherence_model_cuci.get_coherence()
     # coherence_umass = coherence_model_u_mass.get_coherence()
     # # print('\nCoherence Score: ', coherence)
-    # print('\nCoherence C_W2V Score: ', coherence_cw2v, i)
+    print('\nCoherence C_W2V Score: ', coherence_cw2v, i)
     # print('\nCoherence C_NMPI Score: ', coherence_cnmpi, i)
     # print('\nCoherence C_UCI Score: ', coherence_cuci, i)
     # print('\nCoherence U_MASS Score: ', coherence_umass, i)

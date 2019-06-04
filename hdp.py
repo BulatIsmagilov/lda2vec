@@ -33,60 +33,30 @@ print(corpus[:1])
 # Human readable format of corpus (term-frequency)
 [[(id2word[id], freq) for id, freq in cp] for cp in corpus[:1]]
 
+vectors_path = "/Users/ismglv/dev/lda2vec/GoogleNews-vectors-negative300.bin"
+keyed_vectors = gensim.models.KeyedVectors.load_word2vec_format(vectors_path, binary=True)
+
 hdpmodel = HdpModel(corpus=corpus, id2word=id2word)
 
 hdpmodel.show_topics()
 
 coherence_model_hdp = CoherenceModel(model=hdpmodel, texts=texts, dictionary=id2word, coherence='c_v')
 
-coherence_hdp = coherence_model_hdp.get_coherence()
-print('\nCoherence Score: ', coherence_hdp)
+# coherence_hdp = coherence_model_hdp.get_coherence()
+# print('\nCoherence Score: ', coherence_hdp)
 
-coherence_model_cw2v = CoherenceModel(model=hdpmodel, texts=texts, dictionary=id2word, coherence='c_w2v')
-coherence_model_cnmpi = CoherenceModel(model=hdpmodel, texts=texts, dictionary=id2word, coherence='c_npmi')
-coherence_model_cuci = CoherenceModel(model=hdpmodel, texts=texts, dictionary=id2word, coherence='c_uci')
-coherence_model_u_mass = CoherenceModel(model=hdpmodel, texts=texts, dictionary=id2word, coherence='u_mass')
-
+coherence_model_cw2v = CoherenceModel(model=hdpmodel, texts=texts, dictionary=id2word, coherence='c_w2v', keyed_vectors=keyed_vectors)
+# coherence_model_cnmpi = CoherenceModel(model=hdpmodel, texts=texts, dictionary=id2word, coherence='c_npmi')
+# coherence_model_cuci = CoherenceModel(model=hdpmodel, texts=texts, dictionary=id2word, coherence='c_uci')
+# coherence_model_u_mass = CoherenceModel(model=hdpmodel, texts=texts, dictionary=id2word, coherence='u_mass')
+#
 # coherence = coherence_model.get_coherence()
 coherence_cw2v = coherence_model_cw2v.get_coherence()
-coherence_cnmpi = coherence_model_cnmpi.get_coherence()
-coherence_cuci = coherence_model_cuci.get_coherence()
-coherence_umass = coherence_model_u_mass.get_coherence()
+# coherence_cnmpi = coherence_model_cnmpi.get_coherence()
+# coherence_cuci = coherence_model_cuci.get_coherence()
+# coherence_umass = coherence_model_u_mass.get_coherence()
 # print('\nCoherence Score: ', coherence)
 print('\nCoherence C_W2V Score: ', coherence_cw2v)
-print('\nCoherence C_NMPI Score: ', coherence_cnmpi)
-print('\nCoherence C_UCI Score: ', coherence_cuci)
-print('\nCoherence U_MASS Score: ', coherence_umass)
-
-
-# df_topic_sents_keywords = model_visualization.format_topics_sentences(hdpmodel, corpus, texts)
-#
-# df_dominant_topic = df_topic_sents_keywords.reset_index()
-# df_dominant_topic.columns = ['Document_No', 'Dominant_Topic', 'Topic_Perc_Contrib', 'Keywords', 'Text']
-#
-#
-#
-# # to get doc topics df_dominant_topic['Keywords'][doc_num]
-# # to get doc topics dominant quality df_dominant_topic['Dominant_Topic'][doc_num]
-#
-# #Find the most representative document for each topic
-#
-# # Number of Documents for Each Topic
-# topic_counts = df_topic_sents_keywords['Dominant_Topic'].value_counts()
-#
-# # Percentage of Documents for Each Topic
-# topic_contribution = round(topic_counts/topic_counts.sum(), 4)
-#
-# # Topic Number and Keywords
-# topic_num_keywords = df_topic_sents_keywords[['Dominant_Topic', 'Topic_Keywords']]
-#
-# # Concatenate Column wise
-# df_dominant_topics = pd.concat([topic_num_keywords, topic_counts, topic_contribution], axis=1)
-#
-# # Change Column names
-# df_dominant_topics.columns = ['Dominant_Topic', 'Topic_Keywords', 'Num_Documents', 'Perc_Documents']
-#
-# # Show
-# df_dominant_topics
-#
-# print(topic_num_keywords.Topic_Keywords.value_counts())
+# print('\nCoherence C_NMPI Score: ', coherence_cnmpi)
+# print('\nCoherence C_UCI Score: ', coherence_cuci)
+# print('\nCoherence U_MASS Score: ', coherence_umass)
